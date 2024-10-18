@@ -1,0 +1,71 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model User {
+    id                          String           @id @default(uuid())
+    fullName                    String
+    email                       String           @unique
+    description                 String?
+    activeFlag                  Boolean          @default(true)
+    createdBy                   User?            @relation(name: "createdUserId", fields: [createdByUserId], references: [id])
+    createdByUserId             String?
+    createdUserId               User[]           @relation("createdUserId")
+    createdAt                   DateTime         @default(now())
+    updatedBy                   User?            @relation(name: "updatedUserId", fields: [updatedByUserId], references: [id])
+    updatedByUserId             String?
+    updatedUserId               User[]           @relation("updatedUserId")
+    updatedAt                   DateTime         @default(now()) @updatedAt
+    userUserCredentialUser      UserCredential[] @relation(name: "userUserCredentialUser")
+    userUserCredentialCreatedBy UserCredential[] @relation(name: "userUserCredentialCreatedBy")
+    userUserCredentialUpdatedBy UserCredential[] @relation(name: "userUserCredentialUpdatedBy")
+    userNewsCreatedBy           News[]           @relation(name: "userNewsCreatedBy")
+    userNewsUpdatedBy           News[]           @relation(name: "userNewsUpdatedBy")
+
+    @@index([id, fullName, email])
+    @@map("Users")
+}
+
+model UserCredential {
+    id                        String   @id @default(uuid())
+    password                  String
+    passwordAttempt           Int      @default(0)
+    lastFailedPasswordAttempt BigInt?  @default(0)
+    user                      User     @relation(name: "userUserCredentialUser", fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+    userId                    String   @unique
+    createdBy                 User?    @relation(name: "userUserCredentialCreatedBy", fields: [createdByUserId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+    createdByUserId           String?
+    createdAt                 DateTime @default(now())
+    updatedBy                 User?    @relation(name: "userUserCredentialUpdatedBy", fields: [updatedByUserId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+    updatedByUserId           String?
+    updatedAt                 DateTime @default(now()) @updatedAt
+
+    @@index([id])
+    @@map("User_Credentials")
+}
+
+model News {
+    id              String   @id @default(uuid())
+    title           String   @unique
+    content         String
+    activeFlag      Boolean  @default(true)
+    createdBy       User     @relation(name: "userNewsCreatedBy", fields: [createdByUserId], references: [id])
+    createdByUserId String
+    createdAt       DateTime @default(now())
+    updatedBy       User     @relation(name: "userNewsUpdatedBy", fields: [updatedByUserId], references: [id])
+    updatedByUserId String
+    updatedAt       DateTime @default(now()) @updatedAt
+
+    @@map("news")
+}
