@@ -38,18 +38,16 @@ model User {
 }
 
 model UserCredential {
-    id                        String   @id @default(uuid())
-    password                  String
-    passwordAttempt           Int      @default(0)
-    lastFailedPasswordAttempt BigInt?  @default(0)
-    user                      User     @relation(name: "userUserCredentialUser", fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-    userId                    String   @unique
-    createdBy                 User?    @relation(name: "userUserCredentialCreatedBy", fields: [createdByUserId], references: [id], onUpdate: Cascade, onDelete: SetNull)
-    createdByUserId           String?
-    createdAt                 DateTime @default(now())
-    updatedBy                 User?    @relation(name: "userUserCredentialUpdatedBy", fields: [updatedByUserId], references: [id], onUpdate: Cascade, onDelete: SetNull)
-    updatedByUserId           String?
-    updatedAt                 DateTime @default(now()) @updatedAt
+    id              String   @id @default(uuid())
+    password        String
+    user            User     @relation(name: "userUserCredentialUser", fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+    userId          String   @unique
+    createdBy       User?    @relation(name: "userUserCredentialCreatedBy", fields: [createdByUserId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+    createdByUserId String?
+    createdAt       DateTime @default(now())
+    updatedBy       User?    @relation(name: "userUserCredentialUpdatedBy", fields: [updatedByUserId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+    updatedByUserId String?
+    updatedAt       DateTime @default(now()) @updatedAt
 
     @@index([id])
     @@map("User_Credentials")
