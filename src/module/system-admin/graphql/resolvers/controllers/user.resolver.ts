@@ -1,6 +1,6 @@
 export const userResolvers = {
     Query: {
-        findAllUser: async () => {
+        findAllUser: async (root: any, args: any) => {
 
         },
 
